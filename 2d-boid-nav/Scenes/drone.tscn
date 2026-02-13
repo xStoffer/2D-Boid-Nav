@@ -10,9 +10,9 @@ gravity_scale = 0.0
 script = ExtResource("1_o36xs")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=919642444]
+rotation = 1.5707964
 scale = Vector2(0.1, 0.1)
 texture = ExtResource("1_ws5iu")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=570205779]
 shape = SubResource("CircleShape2D_o36xs")
-disabled = true
