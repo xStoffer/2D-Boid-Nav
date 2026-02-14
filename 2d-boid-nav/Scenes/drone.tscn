@@ -5,14 +5,36 @@
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_o36xs"]
 
-[node name="Drone" type="RigidBody2D" unique_id=1950370061]
+[sub_resource type="CircleShape2D" id="CircleShape2D_x74uf"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_i3b1v"]
+radius = 155.01291
+
+[node name="Drone" type="RigidBody2D" unique_id=1950370061 node_paths=PackedStringArray("node_to_ignore")]
+collision_layer = 3
 gravity_scale = 0.0
 script = ExtResource("1_o36xs")
+node_to_ignore = NodePath("Boid_Area/Line_Of_Sight_2D")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=919642444]
 rotation = 1.5707964
 scale = Vector2(0.1, 0.1)
 texture = ExtResource("1_ws5iu")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=570205779]
+[node name="Drone_Collision" type="CollisionShape2D" parent="." unique_id=570205779]
 shape = SubResource("CircleShape2D_o36xs")
+disabled = true
+
+[node name="Drone_Area" type="Area2D" parent="." unique_id=1902424926]
+collision_layer = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Drone_Area" unique_id=529003914]
+shape = SubResource("CircleShape2D_x74uf")
+
+[node name="Boid_Area" type="Area2D" parent="." unique_id=1943411632]
+collision_mask = 6
+
+[node name="Line_Of_Sight_2D" type="CollisionShape2D" parent="Boid_Area" unique_id=666470093]
+shape = SubResource("CircleShape2D_i3b1v")
+
+[connection signal="area_entered" from="Boid_Area" to="." method="_on_boid_area_area_entered"]

@@ -2,6 +2,9 @@ extends RigidBody2D
 
 var random_dir
 var movement_speed = 150
+var boids_in_range: Array
+@export var node_to_ignore: Node2D
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	var random_angle = randf_range(0, 2 * PI)
@@ -30,3 +33,23 @@ func _physics_process(delta: float) -> void:
 	if self.position.y > 600: 
 		global_position.y = 0
 		linear_velocity = dir*movement_speed
+
+func _Steer_Seperation() -> Vector2:
+	var direction = Vector2.ZERO
+	return direction
+
+func _Steer_Cohesion() -> Vector2:
+	var direction = Vector2.ZERO
+	return direction
+
+func _Steer_Center() -> Vector2:
+	var direction = Vector2.ZERO
+	return direction
+
+func _on_boid_area_area_entered(area: Area2D) -> void:
+	print('Im drone: ')
+	print(self.get_rid())
+	print('area_entered')
+	print(area.get_rid())
+	print(area.get_parent())
+	pass # Replace with function body.
