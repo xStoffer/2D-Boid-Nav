@@ -1,7 +1,7 @@
 extends Node2D
 
 @export var drone_scene: PackedScene = preload("res://Scenes/drone.tscn")
-@export var spawn_count: int = 10  # Number of enemies per wave
+@export var spawn_count: int = 20  # Number of enemies per wave
 @export var spawn_area: Rect2 = Rect2(0, 0, 1000, 1000)
 
 # Called when the node enters the scene tree for the first time.

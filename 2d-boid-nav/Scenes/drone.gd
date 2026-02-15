@@ -11,7 +11,7 @@ var drones_in_range: Array[Node2D] = []
 @export var Seperation: float = 1
 @export var Cohesion: float = 1
 @export var Alignment: float = 1
-@onready var detection_area = $Drone_Area/CollisionShape2D
+@onready var detection_area = $Boid_Area/Line_Of_Sight_2D
 
 
 # Called when the node enters the scene tree for the first time.
@@ -55,10 +55,9 @@ func _Steer_Seperation() -> Vector2:
 	var direction = Vector2.ZERO
 	for drone in drones_in_range:
 		var det_radius = detection_area.shape.radius
-		var magnitude = 1
-		var ratio = (drone.global_position - global_position).length()/det_radius
-		if (drone.global_position - global_position).length() > 0:
-			print((drone.global_position - global_position).length())
+		var magnitude = 0.8
+		var ratio = clamp((drone.global_position - global_position).length()*magnitude/(det_radius) , 0, 10)
+		if ratio > 0 and self.name == 'Drone':
 			print(ratio)
 		#clamp(((drone.global_position - global_position).length()-(det_radius*magnitude)),0, (det_radius*magnitude))/det_radius
 		direction -= ratio * (drone.global_position - global_position)
@@ -66,6 +65,10 @@ func _Steer_Seperation() -> Vector2:
 
 func _Steer_Cohesion() -> Vector2:
 	var direction = Vector2.ZERO
+	var other_pos_sum = Vector2.ZERO
+	for drone in drones_in_range:
+		other_pos_sum += drone.global_position
+	direction += (other_pos_sum - global_position)
 	return direction
 
 func _Steer_Alignment() -> Vector2:
