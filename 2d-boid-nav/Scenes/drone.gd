@@ -4,13 +4,14 @@ enum Drone{}
 
 var random_dir
 var dir
-var movement_speed = 150
+var movement_speed = 100
 var drones_in_range: Array[Node2D] = []
 
 @export var Steer_Strength = 0.05
-@export var Seperation = 1
-@export var Cohesion = 1
-@export var Alignment = 1
+@export var Seperation: float = 1
+@export var Cohesion: float = 1
+@export var Alignment: float = 1
+@onready var detection_area = $Drone_Area/CollisionShape2D
 
 
 # Called when the node enters the scene tree for the first time.
@@ -19,6 +20,9 @@ func _ready() -> void:
 	random_dir = Vector2(cos(random_angle), sin(random_angle)).normalized()
 	rotation = random_angle
 	dir = random_dir
+	
+	if self.name == 'Drone':
+		modulate = Color(154.227, 0.0, 25.219, 1.0)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
@@ -44,15 +48,19 @@ func _physics_process(delta: float) -> void:
 
 func _Steer_Apply() -> Vector2:
 	var direction = Vector2.ZERO
-	direction =+ Seperation * _Steer_Seperation()
-	+ Alignment * _Steer_Alignment()
-	+ Cohesion * _Steer_Cohesion()
+	direction =+ Seperation * _Steer_Seperation() + Alignment * _Steer_Alignment() + Cohesion * _Steer_Cohesion()
 	return direction.normalized()
 
 func _Steer_Seperation() -> Vector2:
 	var direction = Vector2.ZERO
 	for drone in drones_in_range:
-		var ratio = 1
+		var det_radius = detection_area.shape.radius
+		var magnitude = 1
+		var ratio = (drone.global_position - global_position).length()/det_radius
+		if (drone.global_position - global_position).length() > 0:
+			print((drone.global_position - global_position).length())
+			print(ratio)
+		#clamp(((drone.global_position - global_position).length()-(det_radius*magnitude)),0, (det_radius*magnitude))/det_radius
 		direction -= ratio * (drone.global_position - global_position)
 	return direction.normalized()
 
@@ -62,7 +70,11 @@ func _Steer_Cohesion() -> Vector2:
 
 func _Steer_Alignment() -> Vector2:
 	var direction = Vector2.ZERO
-	return direction
+	for drone in drones_in_range:
+		direction = Vector2.from_angle(rotation - drone.rotation)
+	if drones_in_range.size() == 0:
+		direction = Vector2.ZERO
+	return direction.normalized()
 
 func _on_boid_area_area_entered(body : Area2D) -> void:
 	var drone = body.get_parent()

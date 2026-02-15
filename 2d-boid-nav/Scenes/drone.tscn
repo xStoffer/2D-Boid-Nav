@@ -8,16 +8,19 @@
 [sub_resource type="CircleShape2D" id="CircleShape2D_x74uf"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_i3b1v"]
-radius = 155.01291
+radius = 111.0
 
 [node name="Drone" type="RigidBody2D" unique_id=1950370061 groups=["Drones"]]
 collision_layer = 3
 gravity_scale = 0.0
 script = ExtResource("1_o36xs")
+Seperation = 0.5
+Cohesion = 0.0
+Alignment = 0.0
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=919642444]
 rotation = 1.5707964
-scale = Vector2(0.1, 0.1)
+scale = Vector2(0.08, 0.08)
 texture = ExtResource("1_ws5iu")
 
 [node name="Drone_Collision" type="CollisionShape2D" parent="." unique_id=570205779]
