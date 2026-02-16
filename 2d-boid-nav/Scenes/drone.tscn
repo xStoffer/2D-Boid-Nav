@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://du3t7oey3g1qc"]
 
-[ext_resource type="Script" uid="uid://dd6wvbwqjqase" path="res://Scenes/drone.gd" id="1_o36xs"]
+[ext_resource type="Script" uid="uid://dd6wvbwqjqase" path="res://Scripts/drone.gd" id="1_o36xs"]
 [ext_resource type="Texture2D" uid="uid://bw0ordjjtrbmw" path="res://Assets/Spaceship_01_YELLOW.png" id="1_ws5iu"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_o36xs"]

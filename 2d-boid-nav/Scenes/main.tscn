@@ -1,9 +1,9 @@
 [gd_scene format=4 uid="uid://ch2swuo14rs3s"]
 
 [ext_resource type="Texture2D" uid="uid://c46mtlwglbqcx" path="res://Assets/Tile 2.png" id="1_jjgbg"]
-[ext_resource type="Script" uid="uid://btqdfnnxiwx4s" path="res://Scenes/boid_center.gd" id="2_8gbba"]
+[ext_resource type="Script" uid="uid://btqdfnnxiwx4s" path="res://Scripts/boid_center.gd" id="2_8gbba"]
 [ext_resource type="Texture2D" uid="uid://bvahn2fae2csc" path="res://icon.svg" id="3_jjvhh"]
-[ext_resource type="Script" uid="uid://cqy3agl11lunk" path="res://Scenes/drone_spawner.gd" id="5_kry3j"]
+[ext_resource type="Script" uid="uid://cqy3agl11lunk" path="res://Scripts/drone_spawner.gd" id="5_kry3j"]
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_bo1nx"]
 vertices = PackedVector2Array(16, 16, -16, 16, -16, -16, 16, -16)
