@@ -6,12 +6,15 @@ var random_dir
 var dir
 var movement_speed = 100
 var drones_in_range: Array[Node2D] = []
+var selected_drones: Array[Node] = []
+var line_thickness: float = 2.0
 
 @export var Steer_Strength = 0.05
 @export var Seperation: float = 1
 @export var Cohesion: float = 1
 @export var Alignment: float = 1
 @onready var detection_area = $Boid_Area/Line_Of_Sight_2D
+@onready var spawner = get_parent()
 
 
 # Called when the node enters the scene tree for the first time.
@@ -20,6 +23,7 @@ func _ready() -> void:
 	random_dir = Vector2(cos(random_angle), sin(random_angle)).normalized()
 	rotation = random_angle
 	dir = random_dir
+	selected_drones = spawner.get_children()
 	
 	if self.name == 'Drone':
 		modulate = Color(154.227, 0.0, 25.219, 1.0)
@@ -31,6 +35,9 @@ func _process(delta: float) -> void:
 func _physics_process(delta: float) -> void:
 	dir += _Steer_Apply()*Steer_Strength
 	rotation = dir.angle()
+	
+	if drones_in_range.size() > 0:
+		queue_redraw()
 	
 	if self.position.x < 0: 
 		global_position.x = 1200
@@ -45,36 +52,60 @@ func _physics_process(delta: float) -> void:
 		#linear_velocity += dir*movement_speed
 	linear_velocity = dir.normalized()*movement_speed
 
+func _draw() -> void:
+	if self.name != "Drone":
+		return
+	
+	var line_color: Color = Color.AQUA
+	var start_point = Vector2.ZERO
+	var end_point = Vector2.ZERO
+	
+	for drone in drones_in_range:
+		end_point = to_local(drone.global_position)
+		var distance_to = end_point.length()
+		if distance_to < 60 and distance_to > 0:
+			line_color = Color.RED
+		else: line_color = Color.AQUA
+		draw_line(start_point, end_point, line_color, line_thickness)
 
 func _Steer_Apply() -> Vector2:
 	var direction = Vector2.ZERO
-	direction =+ Seperation * _Steer_Seperation() + Alignment * _Steer_Alignment() + Cohesion * _Steer_Cohesion()
+	direction =+ ((Seperation * _Steer_Seperation()) + 
+	(Alignment * _Steer_Alignment()) + 
+	(Cohesion * _Steer_Cohesion()))
 	return direction.normalized()
 
 func _Steer_Seperation() -> Vector2:
 	var direction = Vector2.ZERO
-	for drone in drones_in_range:
-		var det_radius = detection_area.shape.radius
-		var magnitude = 0.8
-		var ratio = clamp((drone.global_position - global_position).length()*magnitude/(det_radius) , 0, 10)
-		if ratio > 0 and self.name == 'Drone':
-			print(ratio)
-		#clamp(((drone.global_position - global_position).length()-(det_radius*magnitude)),0, (det_radius*magnitude))/det_radius
-		direction -= ratio * (drone.global_position - global_position)
+	if drones_in_range.size() > 0:
+		for drone in drones_in_range:
+			var det_radius = detection_area.shape.radius
+			var ratio = 0
+			if (drone.global_position - global_position).length() > 0:
+				ratio = abs(det_radius - (drone.global_position - global_position).length())/(det_radius)
+				#ratio = (drone.global_position - global_position).length()/(det_radius)
+			#if self.name == 'Drone':
+				#print(ratio)
+			direction -=  (ratio*0.1)*(drone.global_position - global_position)
 	return direction.normalized()
 
 func _Steer_Cohesion() -> Vector2:
 	var direction = Vector2.ZERO
 	var other_pos_sum = Vector2.ZERO
+	var other_pos = Vector2.ZERO
 	for drone in drones_in_range:
-		other_pos_sum += drone.global_position
-	direction += (other_pos_sum - global_position)
+		other_pos = to_local(drone.global_position)
+		if drone.position == self.position: pass
+		#other_pos_sum += drone.global_position
+		other_pos_sum -= global_position - drone.global_position
+	if other_pos_sum != null and drones_in_range.size() != 0:
+		direction = other_pos_sum
 	return direction
 
 func _Steer_Alignment() -> Vector2:
 	var direction = Vector2.ZERO
 	for drone in drones_in_range:
-		direction = Vector2.from_angle(rotation - drone.rotation)
+		direction += Vector2.from_angle(rotation - drone.rotation)
 	if drones_in_range.size() == 0:
 		direction = Vector2.ZERO
 	return direction.normalized()
