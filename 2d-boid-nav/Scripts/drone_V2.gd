@@ -9,6 +9,10 @@ var drones_in_range: Array[Node2D] = []
 var selected_drones: Array[Node] = []
 var line_thickness: float = 2.0
 
+@export var max_speed: float = 200.0
+@export var max_force: float = 500.0
+@export var max_torque: float = 10000.0
+
 @export var Steer_Strength = 0.05
 @export var Seperation: float = 1
 @export var Cohesion: float = 1
@@ -34,9 +38,30 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	pass
 
+func _integrate_forces(state: PhysicsDirectBodyState2D):
+	#if name == "Drone": return  # Your skip
+	
+	var new_dir = _Steer_Apply()  # → Vector2 or null
+	if new_dir == null: return
+	
+	new_dir += dir*0.5
+	
+	# Steering force (Craig Reynolds boids-style)
+	var desired_velocity = new_dir.normalized() * max_speed
+	var steering_force = (desired_velocity - state.linear_velocity)
+	steering_force = steering_force.limit_length(max_force)
+	
+	state.apply_central_force(steering_force * mass)
+	
+	# Face direction (smooth turn)
+	var target_angle = dir.angle()
+	var angle_diff = wrapf(target_angle - rotation, -PI, PI)
+	state.apply_torque(angle_diff * max_torque)
+	#rotation = wrapf(target_angle - rotation, -PI, PI)
+	
+	dir = state.linear_velocity.normalized()  # Update your dir
+
 func _physics_process(delta: float) -> void:
-	dir += _Steer_Apply()*Steer_Strength
-	rotation = dir.angle()
 	
 	if drones_in_range.size() > 0:
 		queue_redraw()
@@ -50,9 +75,7 @@ func _physics_process(delta: float) -> void:
 	if self.position.y > 600: 
 		global_position.y = 0
 	
-	if linear_velocity.length() < 50:
-		linear_velocity += dir*movement_speed
-	linear_velocity = dir.normalized()*movement_speed
+	#linear_velocity = dir*movement_speed
 
 func _draw() -> void:
 	var start_point = Vector2.ZERO
@@ -82,19 +105,19 @@ func _Steer_Apply() -> Vector2:
 	(Alignment * _Steer_Alignment()) + 
 	(Cohesion * _Steer_Cohesion())+
 	(Click_Center * _Steer_Center()))
-	return direction.normalized()
+	return direction
 
 func _Steer_Center() -> Vector2:
 	var direction = Vector2.ZERO
 	var boid : Vector2 = boid_center.global_position - global_position
 	#direction.x = 10*(boid.x / abs(boid.x))*clamp(abs(boid.x)-50, 0 , 1000)
 	#direction.y = 10*(boid.y / abs(boid.y))*clamp(abs(boid.y)-50, 0 , 1000)
-	direction = boid*2
-	if self.name == 'Drone':
-		print(direction)
-	apply_central_force(direction)
-	apply_torque(self.global_position.angle_to(direction))
-	return direction
+	direction = boid
+	#if self.name == 'Drone':
+		#print(direction)
+	#apply_central_force(direction)
+	#apply_torque(self.global_position.angle_to(direction))
+	return direction.normalized()
 
 func _Steer_Seperation() -> Vector2:
 	var direction = Vector2.ZERO
@@ -121,7 +144,7 @@ func _Steer_Cohesion() -> Vector2:
 		other_pos_sum -= global_position - drone.global_position
 	if other_pos_sum != null and drones_in_range.size() != 0:
 		direction = other_pos_sum
-	return direction
+	return direction.normalized()
 
 func _Steer_Alignment() -> Vector2:
 	var direction = Vector2.ZERO
