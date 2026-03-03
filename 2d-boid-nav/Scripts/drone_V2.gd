@@ -8,9 +8,10 @@ var movement_speed = 100
 var drones_in_range: Array[Node2D] = []
 var selected_drones: Array[Node] = []
 var line_thickness: float = 2.0
+var drone_center = Vector2.ZERO
 
 @export var max_speed: float = 200.0
-@export var max_force: float = 500.0
+@export var max_force: float = 250.0
 @export var max_torque: float = 10000.0
 
 @export var Steer_Strength = 0.05
@@ -97,8 +98,11 @@ func _draw() -> void:
 		var distance_to = end_point.length()
 		if distance_to < 60 and distance_to > 0:
 			line_color = Color.RED
-		else: line_color = Color.AQUA
+		else:
+			line_color = Color.AQUA
 		draw_line(start_point, end_point, line_color, line_thickness)
+	
+	draw_circle(drone_center, 10, Color.GREEN)
 
 func _Steer_Apply() -> Vector2:
 	var direction = Vector2.ZERO
@@ -145,6 +149,11 @@ func _Steer_Cohesion() -> Vector2:
 		other_pos_sum += other_pos
 	if other_pos_sum != null and drones_in_range.size() != 0:
 		direction = other_pos_sum/drones_in_range.size()
+	
+	drone_center = direction
+	if self.name == "Drone":
+		print(direction.normalized())
+		#draw_line(Vector2.ZERO, direction, Color.GREEN, 10)
 	return direction.normalized()
 
 func _Steer_Alignment() -> Vector2:
@@ -156,7 +165,7 @@ func _Steer_Alignment() -> Vector2:
 	if drones_in_range.is_empty():
 		direction = Vector2.ZERO
 	
-	print(direction.normalized())
+	#print(direction.normalized())
 	return direction.normalized()
 
 func _on_boid_area_area_entered(body : Area2D) -> void:
@@ -180,6 +189,6 @@ func _on_boid_area_area_exited(body : Area2D) -> void:
 	var drone = body.get_parent()
 	if drones_in_range.has(drone):
 		drones_in_range.erase(drone)
-		if name == "Drone":
-			print(name, " lost sight of: ", drone.name)
+		#if name == "Drone":
+			#print(name, " lost sight of: ", drone.name)
 	pass # Replace with function body.
