@@ -40,10 +40,8 @@ func _process(delta: float) -> void:
 
 func _integrate_forces(state: PhysicsDirectBodyState2D):
 	#if name == "Drone": return  # Your skip
-	
 	var new_dir = _Steer_Apply()  # → Vector2 or null
 	if new_dir == null: return
-	
 	new_dir += dir*0.5
 	
 	# Steering force (Craig Reynolds boids-style)
@@ -56,8 +54,11 @@ func _integrate_forces(state: PhysicsDirectBodyState2D):
 	# Face direction (smooth turn)
 	var target_angle = dir.angle()
 	var angle_diff = wrapf(target_angle - rotation, -PI, PI)
-	state.apply_torque(angle_diff * max_torque)
-	#rotation = wrapf(target_angle - rotation, -PI, PI)
+	#if name == "Drone": print(angle_diff)
+	var torque_amount = angle_diff * max_torque
+	#torque_amount *= abs(angle_diff) / PI   # stronger when error is large, weak near zero
+	state.apply_torque(torque_amount)
+	#global_rotation = torque_amount
 	
 	dir = state.linear_velocity.normalized()  # Update your dir
 
@@ -141,17 +142,21 @@ func _Steer_Cohesion() -> Vector2:
 		other_pos = to_local(drone.global_position)
 		if drone.position == self.position: pass
 		#other_pos_sum += drone.global_position
-		other_pos_sum -= global_position - drone.global_position
+		other_pos_sum += other_pos
 	if other_pos_sum != null and drones_in_range.size() != 0:
-		direction = other_pos_sum
+		direction = other_pos_sum/drones_in_range.size()
 	return direction.normalized()
 
 func _Steer_Alignment() -> Vector2:
 	var direction = Vector2.ZERO
 	for drone in drones_in_range:
-		direction += Vector2.from_angle(rotation - drone.rotation)
-	if drones_in_range.size() == 0:
+		var neighbor_forward = Vector2(cos(drone.rotation), sin(drone.rotation))
+		direction += neighbor_forward
+	
+	if drones_in_range.is_empty():
 		direction = Vector2.ZERO
+	
+	print(direction.normalized())
 	return direction.normalized()
 
 func _on_boid_area_area_entered(body : Area2D) -> void:
@@ -175,5 +180,6 @@ func _on_boid_area_area_exited(body : Area2D) -> void:
 	var drone = body.get_parent()
 	if drones_in_range.has(drone):
 		drones_in_range.erase(drone)
-		#print(name, " lost sight of: ", drone.name)
+		if name == "Drone":
+			print(name, " lost sight of: ", drone.name)
 	pass # Replace with function body.

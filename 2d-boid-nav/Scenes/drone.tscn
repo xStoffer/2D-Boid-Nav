@@ -11,12 +11,11 @@
 radius = 111.0
 
 [node name="Drone" type="RigidBody2D" unique_id=1950370061 groups=["Drones"]]
-collision_layer = 3
+collision_layer = 0
 gravity_scale = 0.0
+angular_damp = 8.0
 script = ExtResource("1_o36xs")
 Cohesion = 0.0
-Alignment = 0.0
-Click_Center = 0.0
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=919642444]
 rotation = 1.5707964
@@ -25,7 +24,6 @@ texture = ExtResource("1_ws5iu")
 
 [node name="Drone_Collision" type="CollisionShape2D" parent="." unique_id=570205779]
 shape = SubResource("CircleShape2D_o36xs")
-disabled = true
 
 [node name="Drone_Area" type="Area2D" parent="." unique_id=1902424926]
 collision_layer = 2
