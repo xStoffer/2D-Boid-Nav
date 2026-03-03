@@ -8,14 +8,14 @@
 [sub_resource type="CircleShape2D" id="CircleShape2D_x74uf"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_i3b1v"]
-radius = 172.49059
+radius = 89.050545
 
 [node name="Drone" type="RigidBody2D" unique_id=1950370061 groups=["Drones"]]
 collision_layer = 0
 gravity_scale = 0.0
 angular_damp = 8.0
 script = ExtResource("1_o36xs")
-Click_Center = 0.0
+Click_Center = 0.9
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=919642444]
 rotation = 1.5707964
@@ -35,7 +35,6 @@ shape = SubResource("CircleShape2D_x74uf")
 collision_mask = 6
 
 [node name="Line_Of_Sight_2D" type="CollisionShape2D" parent="Boid_Area" unique_id=666470093]
-position = Vector2(1, 0)
 shape = SubResource("CircleShape2D_i3b1v")
 
 [connection signal="area_entered" from="Boid_Area" to="." method="_on_boid_area_area_entered"]

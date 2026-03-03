@@ -6,11 +6,12 @@ var random_dir
 var dir
 var movement_speed = 100
 var drones_in_range: Array[Node2D] = []
+var all_drones: Array[Node] = []
 var selected_drones: Array[Node] = []
 var line_thickness: float = 2.0
 var drone_center = Vector2.ZERO
 
-@export var max_speed: float = 200.0
+@export var max_speed: float = 150.0
 @export var max_force: float = 250.0
 @export var max_torque: float = 10000.0
 
@@ -102,7 +103,7 @@ func _draw() -> void:
 			line_color = Color.AQUA
 		draw_line(start_point, end_point, line_color, line_thickness)
 	
-	draw_circle(drone_center, 10, Color.GREEN)
+	#draw_circle(drone_center, 10, Color.GREEN)
 
 func _Steer_Apply() -> Vector2:
 	var direction = Vector2.ZERO
@@ -131,28 +132,25 @@ func _Steer_Seperation() -> Vector2:
 			var det_radius = detection_area.shape.radius
 			var ratio = 0
 			if (drone.global_position - global_position).length() > 0:
-				ratio = abs(det_radius - (drone.global_position - global_position).length())/(det_radius)
+				ratio = abs((det_radius - (drone.global_position - global_position).length()))/(det_radius)
 				#ratio = (drone.global_position - global_position).length()/(det_radius)
 			#if self.name == 'Drone':
 				#print(ratio)
-			direction -=  (ratio*0.1)*(drone.global_position - global_position)
-	return direction.normalized()
+			direction -=  (ratio*0.025)*(drone.global_position - global_position)
+	return direction
 
-func _Steer_Cohesion() -> Vector2:
+func _Steer_Cohesion() -> Vector2: #NB Change this later for performance and to only count for selected drones
 	var direction = Vector2.ZERO
-	var other_pos_sum = Vector2.ZERO
-	var other_pos = Vector2.ZERO
-	for drone in drones_in_range:
-		other_pos = to_local(drone.global_position)
-		if drone.position == self.position: pass
-		#other_pos_sum += drone.global_position
-		other_pos_sum += other_pos
-	if other_pos_sum != null and drones_in_range.size() != 0:
-		direction = other_pos_sum/drones_in_range.size()
-	
-	drone_center = direction
-	if self.name == "Drone":
-		print(direction.normalized())
+	var drone_sum = Vector2.ZERO
+	#if self.name != "Drone": return Vector2.ZERO
+	all_drones = spawner.get_children()
+	for drone in all_drones:
+		drone_sum += (drone.global_position)
+	#drone_center = drone_sum/all_drones.size()
+	drone_center = spawner.drone_center
+	direction = drone_center - global_position
+	#if self.name == "Drone":
+	#print(drone_center)
 		#draw_line(Vector2.ZERO, direction, Color.GREEN, 10)
 	return direction.normalized()
 
