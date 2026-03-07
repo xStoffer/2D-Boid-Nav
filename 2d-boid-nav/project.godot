@@ -29,7 +29,7 @@ right_click={
 
 [navigation]
 
-2d/default_edge_connection_margin=2.0
+2d/default_edge_connection_margin=10.0
 
 [physics]
 
