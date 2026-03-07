@@ -1,7 +1,7 @@
 extends Node2D
 
 @export var drone_scene: PackedScene = preload("res://Scenes/drone.tscn")
-@export var spawn_count: int = 20 
+@export var spawn_count: int = 20
 @export var spawn_area: Rect2 = Rect2(0, 0, 1000, 1000)
 @export var drone_center = Vector2.ZERO
 var all_drones: Array[Node] = []
