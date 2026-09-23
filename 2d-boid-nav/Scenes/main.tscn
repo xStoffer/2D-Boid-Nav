@@ -47,6 +47,7 @@ tile_map_data = PackedByteArray("AAABAAMAAAAAAAAAAAAAAAMAAAAAAAAAAAAAAAQAAAAAAAA
 tile_set = SubResource("TileSet_jjvhh")
 
 [node name="Boid_Center" type="CharacterBody2D" parent="." unique_id=1666497841]
+position = Vector2(500, 300)
 script = ExtResource("2_8gbba")
 
 [node name="Sprite2D" type="Sprite2D" parent="Boid_Center" unique_id=909682778]
@@ -69,3 +70,7 @@ disabled = true
 
 [node name="Drone_Spawner" type="Node2D" parent="." unique_id=2046845471]
 script = ExtResource("5_kry3j")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=837700881]
+position = Vector2(582, 313)
+zoom = Vector2(1.75, 1.75)

@@ -15,6 +15,11 @@ run/main_scene="uid://ch2swuo14rs3s"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
 
+[display]
+
+window/size/viewport_width=1920
+window/size/viewport_height=1080
+
 [global_group]
 
 Drones=""
